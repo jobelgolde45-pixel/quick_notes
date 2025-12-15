@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/note.json",
+  "title": "Note",
+  "description": "Schema for a note in the Notes Management API",
+  "type": "object",
+  "required": ["title", "content"],
+  "properties": {
+    "id": {
+      "type": "integer",
+      "readOnly": true,
+      "description": "Unique identifier of the note"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "description": "Title of the note"
+    },
+    "content": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Main content of the note"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "readOnly": true,
+      "description": "Creation timestamp"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "readOnly": true,
+      "description": "Last update timestamp"
+    }
+  },
+  "additionalProperties": false
+}
