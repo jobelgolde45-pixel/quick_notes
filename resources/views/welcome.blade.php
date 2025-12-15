@@ -671,24 +671,28 @@
 
         // Fetch all notes from API
         async function fetchNotes() {
-            try {
-                showLoading(true);
-                const response = await fetch(API_BASE_URL);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                notes = await response.json();
-                renderNotes(notes);
-                updateNotesCount(notes.length);
-            } catch (error) {
-                console.error('Error fetching notes:', error);
-                showToast('Error', 'Failed to load notes. Please try again.', 'error');
-            } finally {
-                showLoading(false);
-            }
+    try {
+        showLoading(true);
+        const response = await fetch(API_BASE_URL);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+
+        const json = await response.json();
+
+        notes = Array.isArray(json) ? json : json.data;
+
+        renderNotes(notes);
+        updateNotesCount(notes.length);
+    } catch (error) {
+        console.error('Error fetching notes:', error);
+        showToast('Error', 'Failed to load notes.', 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
 
         // Handle form submission
         async function handleFormSubmit(e) {
@@ -737,7 +741,10 @@
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     
-                    const updatedNote = await response.json();
+                    const json = await response.json();
+                    const updatedNote = json.data;
+
+                    // notes[editIndex] = updatedNote;
                     
                     // Update in local array
                     const index = notes.findIndex(note => note.id == noteId);
@@ -761,8 +768,9 @@
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     
-                    const newNote = await response.json();
-                    notes.unshift(newNote); // Add to beginning
+                    const json = await response.json();
+                    const newNote = json.data; 
+                    notes.unshift(newNote);
                     
                     showToast('Success', 'Note created successfully', 'success');
                 }
@@ -890,14 +898,14 @@
                     month: 'short',
                     day: 'numeric'
                 }) : 'Recent';
-                
+                const content = typeof note.content === 'string' ? note.content : '';
                 noteCard.innerHTML = `
                     <div class="note-header">
                         <div>
                             <h3 class="note-title">${escapeHtml(note.title)}</h3>
                         </div>
                     </div>
-                    <div class="note-content">${escapeHtml(note.content.substring(0, 150))}${note.content.length > 150 ? '...' : ''}</div>
+                    <div class="note-content">${escapeHtml(content.substring(0, 150))}${content.length > 150 ? '...' : ''}</div>
                     <div class="note-date">
                         <i class="far fa-calendar"></i>
                         Created: ${createdAt}
